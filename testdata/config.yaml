@@ -1,0 +1,16 @@
+receivers:
+  otlp: 
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:5317
+        auth:
+          authenticator: infa_auth
+      http:
+        endpoint: 0.0.0.0:5318
+        auth:
+          authenticator: infa_auth
+service:
+  pipelines:
+    traces:
+      receivers:
+      - otlp
