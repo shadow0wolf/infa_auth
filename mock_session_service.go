@@ -1,4 +1,4 @@
-package main
+package infa_auth
 
 import (
 	"log"
