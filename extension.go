@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"github.com/gofiber/fiber/v2/log"
 	"go.opentelemetry.io/collector/client"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension/auth"
@@ -53,6 +54,10 @@ func (e *infaAuthExtension) start(context.Context, component.Host) error {
 
 // authenticate checks whether the given context contains valid auth data. Successfully authenticated calls will always return a nil error and a context with the auth data.
 func (e *infaAuthExtension) authenticate(ctx context.Context, headers map[string][]string) (context.Context, error) {
+	log.Debug("executing authenticate")
+	log.Debug(headers)
+	log.Debug(ctx)
+	log.Debug(e)
 
 	if headers["IDS-AGENT-SESSION-ID"] == nil {
 		return ctx, errGenericError
@@ -87,6 +92,7 @@ func (e *infaAuthExtension) authenticate(ctx context.Context, headers map[string
 
 func validateToken(url string, sessionToken string, headerKey string) bool {
 	// Create an HTTP client
+	log.Debug("calling validateToken ")
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
@@ -96,6 +102,7 @@ func validateToken(url string, sessionToken string, headerKey string) bool {
 	//client := &http.Client{}
 
 	// Create a GET request
+
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		fmt.Println("Error creating request:", err)
@@ -105,7 +112,10 @@ func validateToken(url string, sessionToken string, headerKey string) bool {
 	req.Header.Add(headerKey, sessionToken)
 
 	// Make the request
+	log.Debug("calling making http request ")
 	resp, err := client.Do(req)
+	log.Debug(resp)
+
 	if err != nil {
 		fmt.Println("Error making request:", err)
 		return false

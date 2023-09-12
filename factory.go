@@ -6,25 +6,21 @@ package infa_auth
 import (
 	"context"
 
+	"github.com/shadow0wolf/infa_auth/internal/metadata"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
 )
 
 const (
 	defaultValidationUrl = "http://localhost:8080/"
-	Type                 = "infa_auth"
-	ExtensionStability   = component.StabilityLevelBeta
 )
 
-// NewFactory creates a factory for the OIDC Authenticator extension.
 func NewFactory() extension.Factory {
 	return extension.NewFactory(
-		//metadata.Type,
-		Type,
+		metadata.Type,
 		createDefaultConfig,
 		createExtension,
-		//metadata.ExtensionStability,
-		ExtensionStability,
+		metadata.ExtensionStability,
 	)
 }
 

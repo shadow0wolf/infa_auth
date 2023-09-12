@@ -1,4 +1,4 @@
-package infa_auth
+package main
 
 import (
 	"log"
@@ -7,30 +7,33 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
-func main1() {
+func main() {
 	app := fiber.New()
 	app.Use(cors.New())
-	//log.Default("starting server")
+	log.Println("starting server")
 	api := app.Group("/session-service/api/v1/session")
 
 	// Test handler
 	api.Get("/Agent", func(c *fiber.Ctx) error {
 		headers := c.GetReqHeaders()
-		//log.Fatal(headers)
-		h := headers["Ids-Agent-Session-Id"]
-		/*
-			if h == null {
-				log.Println("Ids-Agent-Session-Id header is null")
-			}
-			h := headers["IDS-AGENT-SESSION-ID"]
-			if h == nil {
+		log.Println(headers)
+		if headers == nil {
+			log.Println("no header")
+		}
+		var h string
+		h = headers["Ids-Agent-Session-Id"]
+		if h == "" {
+			log.Println("Ids-Agent-Session-Id header is null")
+			h = headers["IDS-AGENT-SESSION-ID"]
+			if h == "" {
 				log.Println("IDS-AGENT-SESSION-ID header is null")
+				h = headers["ids-agent-session-id"]
+				if h == "" {
+					log.Println("ids-agent-session-id header is null")
+				}
 			}
-			h := headers["ids-agent-session-id"]
-			if h == nil {
-				log.Println("ids-agent-session-id header is null")
-			}
-		*/
+
+		}
 		log.Println("value of header = " + h)
 
 		if "123123123" == h {
@@ -42,4 +45,5 @@ func main1() {
 		}
 	})
 	app.Listen(":9898")
+	log.Println("started")
 }
