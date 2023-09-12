@@ -67,5 +67,5 @@ service:
 ```
 ##  _mock session service_ ##
 rename package name to main and method-name to main and execute with go run , this api will be hosted :GET http://127.0.0.1:9898/session-service/api/v1/session/Agent ,
-this API expects header IDS-AGENT-SESSION-ID : 123123123 to returns http 200 response , if header does not exist or value is different then API returns http 401
-I have not been able to sigure out way to run this API as part of the test cases to this step is manualfor now.
+this API expects header IDS-AGENT-SESSION-ID : 123123123 to returns http 200 response , if header does not exist or value is different then API returns http 401 ,
+I have not been able to figure out way to run this API as part of the test cases to this step is manual for now.
