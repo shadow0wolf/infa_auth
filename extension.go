@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	errNoAudienceProvided = errors.New("no Audience provided for the OIDC configuration")
-	errNotAuthenticated   = errors.New("authentication didn't succeed")
+	errGenericError     = errors.New("errGenericError")
+	errNotAuthenticated = errors.New("authentication didn't succeed")
 )
 
 type infaAuthExtension struct {
@@ -26,7 +26,7 @@ type infaAuthExtension struct {
 
 func newExtension(ctx context.Context, cfg *Config, logger *zap.Logger) (auth.Server, error) {
 	if cfg.ValidationURL == "" {
-		return nil, errNoAudienceProvided
+		return nil, errGenericError
 	}
 
 	oe := &infaAuthExtension{
@@ -53,12 +53,23 @@ func (e *infaAuthExtension) start(context.Context, component.Host) error {
 
 // authenticate checks whether the given context contains valid auth data. Successfully authenticated calls will always return a nil error and a context with the auth data.
 func (e *infaAuthExtension) authenticate(ctx context.Context, headers map[string][]string) (context.Context, error) {
-	metadata := client.NewMetadata(headers)
-	validationURL := metadata.Get(e.cfg.ValidationURL)
-	//@#@#123 read this from request , or context
-	token := "64Vjmeewe81iwbIPfgUmqu"
-	if len(validationURL) == 0 {
-		return ctx, errNotAuthenticated
+
+	if headers["IDS-AGENT-SESSION-ID"] == nil {
+		return ctx, errGenericError
+	}
+
+	if len(headers["IDS-AGENT-SESSION-ID"]) == 0 {
+		return ctx, errGenericError
+	}
+
+	token := headers["IDS-AGENT-SESSION-ID"][0]
+
+	if len(e.cfg.ValidationURL) == 0 {
+		return ctx, errGenericError
+	}
+
+	if len(token) == 0 {
+		return ctx, errGenericError
 	}
 
 	cl := client.FromContext(ctx)
@@ -67,14 +78,14 @@ func (e *infaAuthExtension) authenticate(ctx context.Context, headers map[string
 	}
 
 	status := false
-	status = validateToken("", "")
-	if status == false {
-
+	status = validateToken(e.cfg.ValidationURL, token, e.cfg.Headerkey)
+	if !status {
+		return ctx, errNotAuthenticated
 	}
 	return client.NewContext(ctx, cl), nil
 }
 
-func validateToken(url string, sessionToken string) bool {
+func validateToken(url string, sessionToken string, headerKey string) bool {
 	// Create an HTTP client
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
@@ -90,7 +101,8 @@ func validateToken(url string, sessionToken string) bool {
 		fmt.Println("Error creating request:", err)
 		return false
 	}
-	req.Header.Add("IDS-AGENT-SESSION-ID", sessionToken)
+	//req.Header.Add("IDS-AGENT-SESSION-ID", sessionToken)
+	req.Header.Add(headerKey, sessionToken)
 
 	// Make the request
 	resp, err := client.Do(req)
