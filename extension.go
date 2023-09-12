@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 
@@ -55,20 +54,28 @@ func (e *infaAuthExtension) start(context.Context, component.Host) error {
 // authenticate checks whether the given context contains valid auth data. Successfully authenticated calls will always return a nil error and a context with the auth data.
 func (e *infaAuthExtension) authenticate(ctx context.Context, headers map[string][]string) (context.Context, error) {
 	log.Debug("executing authenticate")
-	log.Debug(headers)
-	log.Debug(ctx)
-	log.Debug(e)
+	log.Debugf("headers ", headers)
+	log.Debugf("ctx ", ctx)
+	log.Debug("e.cfg ", *e.cfg)
 
-	if headers["IDS-AGENT-SESSION-ID"] == nil {
-		return ctx, errGenericError
+	var h []string
+
+	h = headers["Ids-Agent-Session-Id"]
+	if h == nil {
+		log.Debug("Ids-Agent-Session-Id header is null")
+		h = headers["IDS-AGENT-SESSION-ID"]
+		if h == nil {
+			log.Debug("IDS-AGENT-SESSION-ID header is null")
+			h = headers["ids-agent-session-id"]
+			if h == nil {
+				log.Debug("ids-agent-session-id header is null")
+				return ctx, errGenericError
+			}
+		}
 	}
 
-	if len(headers["IDS-AGENT-SESSION-ID"]) == 0 {
-		return ctx, errGenericError
-	}
-
-	token := headers["IDS-AGENT-SESSION-ID"][0]
-
+	token := h[0]
+	log.Debug("token is :" + token)
 	if len(e.cfg.ValidationURL) == 0 {
 		return ctx, errGenericError
 	}
@@ -105,7 +112,7 @@ func validateToken(url string, sessionToken string, headerKey string) bool {
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Println("Error creating request:", err)
+		log.Debugf("Error creating request:", err)
 		return false
 	}
 	//req.Header.Add("IDS-AGENT-SESSION-ID", sessionToken)
@@ -114,14 +121,14 @@ func validateToken(url string, sessionToken string, headerKey string) bool {
 	// Make the request
 	log.Debug("calling making http request ")
 	resp, err := client.Do(req)
-	log.Debug(resp)
+	log.Debugf("resp ", resp)
 
 	if err != nil {
-		fmt.Println("Error making request:", err)
+		log.Debugf("Error making request:", err)
 		return false
 	}
 	if resp.StatusCode != 200 {
-		fmt.Println("http status is not 200:")
+		log.Debugf("http status is not 200:")
 		return false
 	}
 
@@ -130,12 +137,12 @@ func validateToken(url string, sessionToken string, headerKey string) bool {
 	// Read the response body
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("Error reading response body:", err)
+		log.Debugf("Error reading response body:", err)
 		return false
 	}
 
 	// Print the response
-	fmt.Println(string(body))
+	log.Debugf(string(body))
 	return true
 
 }
