@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/cors"
 )
 
-func main() {
+func main1() {
 	app := fiber.New()
 	app.Use(cors.New())
 	log.Println("starting server")
