@@ -1,3 +1,9 @@
+## Problem Statement : ##
+ Process only valid telemetry requests coming from valid secure-agents.
+ 
+ OTEL Collector (deployed in enterprise cloud) will recieve telemetry requests from agentdeployed on user's on-prem these telemetry requests will arrive via internet thus it is required to filter malicious requests (DOS attack).   
+ 
+
 ## _BUILDING collector binary_ ##
 
 ```sh
