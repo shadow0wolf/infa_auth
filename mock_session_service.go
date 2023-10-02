@@ -41,7 +41,7 @@ func main1() {
 			return c.SendStatus(200)
 		} else {
 			log.Println("FAIL")
-			return c.SendStatus(401)
+			return c.SendStatus(203)
 		}
 	})
 	app.Listen(":9898")
