@@ -12,7 +12,14 @@ import (
 func TestCreateDefaultConfig(t *testing.T) {
 	// prepare and test
 	expected := &Config{
-		ValidationURL: defaultValidationUrl,
+		TimeOut:            2,
+		ClientSideSsl:      false,
+		ValidationURL:      "http://localhost:8080/",
+		Headerkey:          "IDS-AGENT-SESSION-ID",
+		ClientCertPath:     "/mnt/crt/client_cert.crt",
+		CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: false,
+		ClientKeyPath:      "/mnt/crt/client_key.crt",
 	}
 
 	// test
@@ -25,9 +32,6 @@ func TestCreateDefaultConfig(t *testing.T) {
 
 func TestCreateExtension(t *testing.T) {
 	cfg := createDefaultConfig().(*Config)
-	//	cfg.Audience = "collector"
-	//	cfg.IssuerURL = "https://auth.example.com"
-
 	ext, err := createExtension(context.Background(), extensiontest.NewNopCreateSettings(), cfg)
 	assert.NoError(t, err)
 	assert.NotNil(t, ext)

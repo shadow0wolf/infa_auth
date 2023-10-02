@@ -2,21 +2,90 @@ package infa_auth
 
 import (
 	"context"
-	"log"
-	"testing"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
+	"log"
+	"testing"
 )
+
+func TestStartPass(t *testing.T) {
+	config := &Config{
+		TimeOut:            2,
+		ClientSideSsl:      false,
+		ValidationURL:      "http://localhost:8080/",
+		Headerkey:          "IDS-AGENT-SESSION-ID",
+		ClientCertPath:     "/mnt/crt/client_cert.crt",
+		CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: false,
+		ClientKeyPath:      "/mnt/crt/client_key.crt",
+	}
+	extension, _ := newExtension(context.Background(), config, zap.NewNop())
+	err := extension.Start(context.Background(), nil)
+	assert.NoError(t, err)
+
+}
+
+func TestStartFail1(t *testing.T) {
+	config := &Config{
+		TimeOut:       2,
+		ClientSideSsl: false,
+		//ValidationURL:      "http://localhost:8080/",
+		Headerkey:          "IDS-AGENT-SESSION-ID",
+		ClientCertPath:     "/mnt/crt/client_cert.crt",
+		CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: false,
+		ClientKeyPath:      "/mnt/crt/client_key.crt",
+	}
+	extension, _ := newExtension(context.Background(), config, zap.NewNop())
+	err := extension.Start(context.Background(), nil)
+	assert.ErrorContains(t, err, "ValidationURL is empty")
+
+}
+
+func TestStartFail2(t *testing.T) {
+	config := &Config{
+		TimeOut:       2,
+		ClientSideSsl: false,
+		ValidationURL: "http://localhost:8080/",
+		//Headerkey:          "IDS-AGENT-SESSION-ID",
+		ClientCertPath:     "/mnt/crt/client_cert.crt",
+		CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: false,
+		ClientKeyPath:      "/mnt/crt/client_key.crt",
+	}
+	extension, _ := newExtension(context.Background(), config, zap.NewNop())
+	err := extension.Start(context.Background(), nil)
+	assert.ErrorContains(t, err, "Headerkey is empty")
+}
+
+func TestStartFail3(t *testing.T) {
+	config := &Config{
+		TimeOut:       2,
+		ClientSideSsl: true,
+		ValidationURL: "http://localhost:8080/",
+		Headerkey:     "IDS-AGENT-SESSION-ID",
+		//ClientCertPath:     "/mnt/crt/client_cert.crt",
+		CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: false,
+		ClientKeyPath:      "/mnt/crt/client_key.crt",
+	}
+	extension, _ := newExtension(context.Background(), config, zap.NewNop())
+	err := extension.Start(context.Background(), nil)
+	assert.ErrorContains(t, err, "ClientCertPath is empty")
+}
 
 func TestAuthenticationSucceeded(t *testing.T) {
 
-	// prepare
-	//startNewMockSessionService()
-
 	config := &Config{
-		ValidationURL: "http://127.0.0.1:9898/session-service/api/v1/session/Agent",
+		TimeOut:       2,
+		ClientSideSsl: false,
+		ValidationURL: "http://localhost:9898/session-service/api/v1/session/Agent",
 		Headerkey:     "IDS-AGENT-SESSION-ID",
+		//ClientCertPath:     "/mnt/crt/client_cert.crt",
+		//CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: true,
+		//ClientKeyPath:      "/mnt/crt/client_key.crt",
 	}
 
 	p, err := newExtension(context.Background(), config, zap.NewNop())
@@ -31,8 +100,14 @@ func TestAuthenticationSucceeded(t *testing.T) {
 func TestAuthenticationFailed(t *testing.T) {
 
 	config := &Config{
-		ValidationURL: "http://127.0.0.1:9898/session-service/api/v1/session/Agent",
+		TimeOut:       2,
+		ClientSideSsl: false,
+		ValidationURL: "http://localhost:9898/session-service/api/v1/session/Agent",
 		Headerkey:     "IDS-AGENT-SESSION-ID",
+		//ClientCertPath:     "/mnt/crt/client_cert.crt",
+		//CACertPath:         "/mnt/crt/t_store_def.crt",
+		InsecureSkipVerify: true,
+		//ClientKeyPath:      "/mnt/crt/client_key.crt",
 	}
 
 	p, err := newExtension(context.Background(), config, zap.NewNop())

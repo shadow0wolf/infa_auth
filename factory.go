@@ -1,18 +1,21 @@
-// Copyright The OpenTelemetry Authors
-// SPDX-License-Identifier: Apache-2.0
-
 package infa_auth
 
 import (
 	"context"
-
 	"github.com/shadow0wolf/infa_auth/internal/metadata"
 	"go.opentelemetry.io/collector/component"
 	"go.opentelemetry.io/collector/extension"
 )
 
 const (
-	defaultValidationUrl = "http://localhost:8080/"
+	defaultTimeOut            = 2
+	defaultClientSideSsl      = false
+	defaultValidationURL      = "http://localhost:8080/"
+	defaultHeaderkey          = "IDS-AGENT-SESSION-ID"
+	defaultClientCertPath     = "/mnt/crt/client_cert.crt"
+	defaultCACertPath         = "/mnt/crt/t_store_def.crt"
+	defaultInsecureSkipVerify = false
+	defaultClientKeyPath      = "/mnt/crt/client_key.crt"
 )
 
 func NewFactory() extension.Factory {
@@ -26,7 +29,14 @@ func NewFactory() extension.Factory {
 
 func createDefaultConfig() component.Config {
 	return &Config{
-		ValidationURL: defaultValidationUrl,
+		TimeOut:            defaultTimeOut,
+		ClientSideSsl:      defaultClientSideSsl,
+		ValidationURL:      defaultValidationURL,
+		Headerkey:          defaultHeaderkey,
+		ClientCertPath:     defaultClientCertPath,
+		CACertPath:         defaultCACertPath,
+		InsecureSkipVerify: defaultInsecureSkipVerify,
+		ClientKeyPath:      defaultClientKeyPath,
 	}
 }
 
