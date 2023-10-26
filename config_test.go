@@ -26,14 +26,15 @@ func TestLoadConfig(t *testing.T) {
 	var tt = Aaa{
 		id: component.NewID(metadata.Type),
 		expected: &Config{
-			TimeOut:            2,
+			TimeOut:            1,
 			ClientSideSsl:      true,
 			ValidationURL:      "https://pod.ics.dev:444/session-service/api/v1/session/Agent",
 			Headerkey:          "IDS-AGENT-SESSION-ID",
-			ClientCertPath:     "/mnt/a/c1Client.crt",
-			CACertPath:         "/mnt/a/ca_cert_path.crt",
-			InsecureSkipVerify: true,
-			ClientKeyPath:      "/mnt/a/client_key_path.pem",
+			ClientJksPath:      "/mnt/a/c1Client.crt",
+			ClientJksPassword:  "changeit1",
+			CAJksPath:          "/mnt/a/ca_cert_path.crt",
+			CAJksPassword:      "changeit2",
+			InsecureSkipVerify: false,
 		},
 	}
 

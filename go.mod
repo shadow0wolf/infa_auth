@@ -14,6 +14,7 @@ require (
 )
 
 require (
+    github.com/lwithers/minijks v1.1.0
 	github.com/andybalholm/brotli v1.0.5 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect

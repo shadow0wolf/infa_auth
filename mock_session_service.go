@@ -1,13 +1,12 @@
 package infa_auth
 
 import (
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
+	"log"
 )
 
-func main1() {
+func mockServer() {
 	app := fiber.New()
 	app.Use(cors.New())
 	log.Println("starting server")
@@ -44,6 +43,7 @@ func main1() {
 			return c.SendStatus(203)
 		}
 	})
-	app.Listen(":9898")
+	app.ListenTLS(":9898", "c:/tmp/certstrap-master/out/localhost.crt", "c:/tmp/certstrap-master/out/localhost.key")
+	//app.Listen(":9898")
 	log.Println("started")
 }

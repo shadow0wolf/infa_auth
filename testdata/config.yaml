@@ -2,7 +2,10 @@ infa_auth:
   client_side_ssl: true
   validation_url: https://pod.ics.dev:444/session-service/api/v1/session/Agent
   header_key: IDS-AGENT-SESSION-ID
-  client_cert_path: "/mnt/a/c1Client.crt"
-  insecure_skip_verify: true
-  ca_cert_path: "/mnt/a/ca_cert_path.crt"
-  client_key_path: "/mnt/a/client_key_path.pem"
+  client_jks_path: "/mnt/a/c1Client.crt"
+  client_jks_password: "changeit1"
+  insecure_skip_verify: false
+  ca_jks_path: "/mnt/a/ca_cert_path.crt"
+  ca_jks_password : "changeit2"
+  time_out : 1
+  

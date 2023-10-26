@@ -12,14 +12,15 @@ import (
 func TestCreateDefaultConfig(t *testing.T) {
 	// prepare and test
 	expected := &Config{
-		TimeOut:            2,
-		ClientSideSsl:      false,
+		TimeOut:            7,
+		ClientSideSsl:      true,
 		ValidationURL:      "http://localhost:8080/",
 		Headerkey:          "IDS-AGENT-SESSION-ID",
-		ClientCertPath:     "/mnt/crt/client_cert.crt",
-		CACertPath:         "/mnt/crt/t_store_def.crt",
+		ClientJksPath:      "/mnt/crt/client_cert.jks",
+		ClientJksPassword:  "change_it_1",
+		CAJksPath:          "/mnt/crt/trust_store.jks",
+		CAJksPassword:      "change_it_2",
 		InsecureSkipVerify: false,
-		ClientKeyPath:      "/mnt/crt/client_key.crt",
 	}
 
 	// test

@@ -8,14 +8,15 @@ import (
 )
 
 const (
-	defaultTimeOut            = 2
-	defaultClientSideSsl      = false
+	defaultTimeOut            = 7
+	defaultClientSideSsl      = true
 	defaultValidationURL      = "http://localhost:8080/"
 	defaultHeaderkey          = "IDS-AGENT-SESSION-ID"
-	defaultClientCertPath     = "/mnt/crt/client_cert.crt"
-	defaultCACertPath         = "/mnt/crt/t_store_def.crt"
+	defaultClientJksPath      = "/mnt/crt/client_cert.jks"
+	defaultClientJksPassword  = "change_it_1"
+	defaultCAJksPath          = "/mnt/crt/trust_store.jks"
+	defaultCAJksPassword      = "change_it_2"
 	defaultInsecureSkipVerify = false
-	defaultClientKeyPath      = "/mnt/crt/client_key.crt"
 )
 
 func NewFactory() extension.Factory {
@@ -33,10 +34,11 @@ func createDefaultConfig() component.Config {
 		ClientSideSsl:      defaultClientSideSsl,
 		ValidationURL:      defaultValidationURL,
 		Headerkey:          defaultHeaderkey,
-		ClientCertPath:     defaultClientCertPath,
-		CACertPath:         defaultCACertPath,
+		ClientJksPath:      defaultClientJksPath,
+		ClientJksPassword:  defaultClientJksPassword,
+		CAJksPath:          defaultCAJksPath,
+		CAJksPassword:      defaultCAJksPassword,
 		InsecureSkipVerify: defaultInsecureSkipVerify,
-		ClientKeyPath:      defaultClientKeyPath,
 	}
 }
 
