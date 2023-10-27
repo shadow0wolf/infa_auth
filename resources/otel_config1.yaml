@@ -1,0 +1,38 @@
+extensions:
+   infa_auth:
+     validation_url: https://qa-pod1.mrel.infaqa.com/session-service/api/v1/session/Agent
+     header_key: IDS-AGENT-SESSION-ID
+     insecure_skip_verify: false
+     client_side_ssl: true
+     client_jks_path: "/opt/resource/scheduler-service-keystore.jks"
+     client_jks_password: "changeit"
+     ca_jks_path: "/opt/resource/truststore.jks"
+     ca_jks_password: "changeit"
+     
+   receivers:
+     otlp:
+       protocols:
+         grpc:
+           endpoint: "0.0.0.0:55681"
+           auth:
+             authenticator: infa_auth
+         http:
+           endpoint: "0.0.0.0:55680"
+           auth:
+             authenticator: infa_auth
+   
+   exporters:
+     file:
+       path: "/opt/resource/otel_custom_logs.txt"
+     logging:
+       verbosity: detailed  
+   service:
+     extensions: [infa_auth]
+     pipelines:
+       traces:
+         receivers: [otlp]
+         exporters: [file,logging]
+         
+     telemetry:
+       logs:
+         level: "debug"

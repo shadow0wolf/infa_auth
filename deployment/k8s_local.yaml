@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-cust-collector-local
+spec:
+  replicas: 1  # Set the number of desired replicas
+  selector:
+    matchLabels:
+      app: otel-cust-collector-local
+  template:
+    metadata:
+      labels:
+        app: otel-cust-collector-local
+    spec:
+      containers:
+      - name:  otel-cust-collector-local-container
+        image: cust_otel_collector:latest  # Replace with your Docker image name and tag
+        imagePullPolicy: Never
+        volumeMounts:
+           - name: config-volume
+             mountPath: /opt/resources/
+           - name: persistent-volume1
+             mountPath: /opt/pv/
+      volumes:
+        - name: config-volume
+          configMap:
+            name: otel-cust-collector-configmap
+        - name: persistent-volume1
+          persistentVolumeClaim:
+            claimName: otel-cust-collector-local-pvc  
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-cust-collector-configmap
+data:
+  otel_config.yaml: |
+     extensions:
+       infa_auth:
+         validation_url: https://qa-pod1.mrel.infaqa.com/session-service/api/v1/session/Agent
+         header_key: IDS-AGENT-SESSION-ID
+         insecure_skip_verify: false
+         client_side_ssl: true
+         client_jks_path: "/opt/pv/scheduler-service-keystore.jks"
+         client_jks_password: "changeit"
+         ca_jks_path: "/opt/pv/truststore.jks"
+         ca_jks_password: "changeit"
+       
+     receivers:
+       otlp:
+         protocols:
+           grpc:
+             endpoint: "0.0.0.0:55681"
+             auth:
+               authenticator: infa_auth
+           http:
+             endpoint: "0.0.0.0:55680"
+             auth:
+               authenticator: infa_auth
+     
+     exporters:
+       file:
+         path: "/opt/pv/otel_custom_logs.txt"
+       logging:
+         verbosity: detailed  
+     service:
+       extensions: [infa_auth]
+       pipelines:
+         traces:
+           receivers: [otlp]
+           exporters: [file,logging]
+           
+       telemetry:
+         logs:
+           level: "debug"
+
+---
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: otel-cust-collector-local-pv
+spec:
+  capacity:
+    storage: 1Mi
+  volumeMode: Filesystem
+  accessModes:
+    - ReadWriteOnce  # Define the access mode(s) needed
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: default  # If applicable
+  hostPath:
+    path: /opt/resources/  # @#@#123 Specify the path on the host machine
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: otel-cust-collector-local-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Mi
+  storageClassName: default  # If applicable 
+  volumeName: otel-cust-collector-local-pv
